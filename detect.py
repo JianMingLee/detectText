@@ -41,7 +41,7 @@ def swt(canny, gradient_x, gradient_y):
 
     # compute sw of each pixel.
     rays = []
-    pres = 0.5
+    pres = 0.05
     for x in range(h):
         for y in range(w):
             if canny[x][y] > 0:
@@ -88,10 +88,12 @@ def swt(canny, gradient_x, gradient_y):
                                     if swt_img[point[0]][point[1]] > length:
                                         swt_img[point[0]][point[1]] = length
                                 rays.append(ray)
-                                break
 
-                            else:
-                                continue                            
+                            break
+                                #break
+
+                            #else:
+                                #continue                            
 
                         except ValueError:
                             print g_x, -g_cx, g_y, g_cy
@@ -121,8 +123,14 @@ def detect_text(im):
     low = 0.5 * high
     canny = cv2.Canny(gray, low, high, 3)
 
-    scharr_x = cv2.Scharr(gray, -1, 1, 0)
-    scharr_y = cv2.Scharr(gray, -1, 0, 1)
+    scaled = cv2.convertScaleAbs(gray, alpha=1.0/255.0, beta=0)
+    smoothd = cv2.GaussianBlur(scaled, (5, 5), sigmaX=0)
+
+    scharr_x = cv2.Scharr(smoothd, -1, 1, 0)
+    scharr_y = cv2.Scharr(smoothd, -1, 0, 1)
+
+    scharr_x = cv2.blur(scharr_x, (3, 3))
+    scharr_y = cv2.blur(scharr_y, (3, 3))
 
     show("scharr_x", scharr_x)
     show("scharr_y", scharr_y)
@@ -148,5 +156,5 @@ def main(filename):
 
 
 if __name__ == '__main__':
-    filename = '/home/molly/detectText/9d473fccaf7728bd59588e2b5a1d8ed2-600x450.jpg'
+    filename = '/home/molly/detectText/6a60ed1e2a30360d290bdccf201c42f1.jpg'
     main(filename)
